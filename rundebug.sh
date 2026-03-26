@@ -1,0 +1,1 @@
+./cmake-build-debug/simple_password_manager
