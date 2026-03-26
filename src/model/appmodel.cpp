@@ -106,3 +106,15 @@ void Appmodel::AddNewMasterLogin(User &user)
 User Appmodel::GetCurrentUser(){
     return mCurrentUser;
 }
+
+void Appmodel::DeleteEntry(int entryID)
+{
+    try
+    {
+        pDBHandler->DeletePasswordEntry(entryID);
+    }
+    catch(const DBException& e)
+    {
+        throw e;
+    }
+}

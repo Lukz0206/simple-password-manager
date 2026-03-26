@@ -86,6 +86,11 @@ void UserMenu::RefreshEntries(std::vector<PasswordEntry> &entries)
         item->setData(static_cast<int>(i), Qt::UserRole);
         pEntryModel->appendRow(item);
     }
+
+    if(entries.size() == 0)
+    {
+        pDetailLabel->setText("Select an entry");
+    }
 }
 
 void UserMenu::HandleListClick(const QModelIndex &index)

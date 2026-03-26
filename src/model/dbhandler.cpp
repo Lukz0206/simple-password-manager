@@ -197,11 +197,33 @@ std::vector<PasswordEntry> DBHandler::ReadAllPasswordEntriesFromUser(std::string
             sqlite3_close(pLoginDB);
             throw DBException(err.c_str());
         }
+        sqlite3_close(pLoginDB);
         return userEntries;
     }
     catch(const DBException& e)
     {
         throw e;
     }
-    
+   
+}
+
+void DBHandler::DeletePasswordEntry(int entryID)
+{
+    try
+    {
+        OpenDatabase();
+        std::string sql = std::format("Delete from Userpassword where PASSID={}", entryID);
+        char* errmsg;
+        if(sqlite3_exec(pLoginDB, sql.c_str(), NULL, NULL, &errmsg) != SQLITE_OK)
+        {
+            std::string error = errmsg;
+            sqlite3_free(errmsg);
+            sqlite3_close(pLoginDB);
+        }
+        sqlite3_close(pLoginDB);
+    }
+    catch(const DBException& e)
+    {
+        throw e;
+    }
 }

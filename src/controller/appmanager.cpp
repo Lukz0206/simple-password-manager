@@ -41,7 +41,7 @@ void AppManager::AuthenticateUser(QString login, QString password)
     switch (status)
     {
     case NOLOGINFOUND:
-        pLoginMenu->SetErrorMessage("Login or password wrong");
+        pLoginMenu->SetErrorMessage("Login not found");
         break;
     case INCORRECTLOGIN:
         pLoginMenu->SetErrorMessage("Incorrect login or password");
@@ -136,5 +136,17 @@ void AppManager::ShowErrorbox(std::string message)
 
 void AppManager::DeleteSelectedEntry(int entryID)
 {
-    std::cout << "Delete requested: " << entryID << std::endl; 
+    std::cout << "Delete requested: " << entryID << std::endl;
+    try
+    {
+        mAppmodel.DeleteEntry(entryID);
+    }
+    catch (DBException& e)
+    {
+        ShowErrorbox("Couldn't delete entry");
+    }
+    
+    std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
+    std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
+    pUserMenu->RefreshEntries(entries);
 }

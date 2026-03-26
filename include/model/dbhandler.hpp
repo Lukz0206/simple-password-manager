@@ -25,6 +25,7 @@ public:
     
     void InsertNewEntry(const std::string &user, const std::string &login, const std::string &password, const std::string &source, const std::string &iv_base64);
     std::vector<PasswordEntry> ReadAllPasswordEntriesFromUser(std::string &user);
+    void DeletePasswordEntry(int entryID);
 
 private:
     std::string mUserDBPath;
