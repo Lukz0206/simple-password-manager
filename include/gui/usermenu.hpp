@@ -30,6 +30,9 @@ private:
     QVBoxLayout *pMainLayout;  
     QSplitter *pSplitter;
     QListView *pListView;
+    QPushButton *pAddBtn;
+    QPushButton *pEditBtn;
+    QPushButton *pDeleteBtn;
     void OnAddEntryButtonPressed();
     void HandleListClick(const QModelIndex &index);
     void OnDeleteButtonPressed();

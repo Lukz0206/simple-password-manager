@@ -24,13 +24,14 @@ UserMenu::UserMenu(QWidget *parent) : QWidget(parent)
     pSplitter->addWidget(pDetailLabel);
     
     QHBoxLayout *bottomBar = new QHBoxLayout();
-    QPushButton *addBtn = new QPushButton("Add Entry");
-    QPushButton *editBtn = new QPushButton("Edit Entry");
-    QPushButton *deleteBtn = new QPushButton("Delete Entry");
+    pAddBtn = new QPushButton("Add Entry");
+    pEditBtn = new QPushButton("Edit Entry");
+    pDeleteBtn = new QPushButton("Delete Entry");
+    pDeleteBtn->setEnabled(false);
     
-    bottomBar->addWidget(addBtn);
-    bottomBar->addWidget(editBtn);
-    bottomBar->addWidget(deleteBtn);
+    bottomBar->addWidget(pAddBtn);
+    bottomBar->addWidget(pEditBtn);
+    bottomBar->addWidget(pDeleteBtn);
     
     pMainLayout->addLayout(bottomBar);
     
@@ -41,9 +42,9 @@ UserMenu::UserMenu(QWidget *parent) : QWidget(parent)
     // Handle mouseclick on ListView
     connect(pListView, &QListView::clicked, this, &UserMenu::HandleListClick);
     //Connect addButton action
-    connect(addBtn, &QPushButton::pressed, this, &UserMenu::OnAddEntryButtonPressed);
+    connect(pAddBtn, &QPushButton::pressed, this, &UserMenu::OnAddEntryButtonPressed);
     //Connect deleteButton action
-    connect(deleteBtn, &QPushButton::pressed, this, &UserMenu::OnDeleteButtonPressed);
+    connect(pDeleteBtn, &QPushButton::pressed, this, &UserMenu::OnDeleteButtonPressed);
 }
 
 // Show a AddEntryDialog on Buttonpress
@@ -62,7 +63,6 @@ void UserMenu::OnAddEntryButtonPressed()
 void UserMenu::OnDeleteButtonPressed()
 {
     ConfirmDialog confirmDialog(this);
-
     if (confirmDialog.exec() == QDialog::Accepted)
     {
         int entryID = mPasswordEntries.at(mSelectedIndex).mID;
@@ -90,11 +90,13 @@ void UserMenu::RefreshEntries(std::vector<PasswordEntry> &entries)
     if(entries.size() == 0)
     {
         pDetailLabel->setText("Select an entry");
+        pDeleteBtn->setEnabled(false);
     }
 }
 
 void UserMenu::HandleListClick(const QModelIndex &index)
 {
+    pDeleteBtn->setEnabled(true);
     mSelectedIndex = index.data(Qt::UserRole).toInt();
     const PasswordEntry &entry = mPasswordEntries.at(mSelectedIndex);
     pDetailLabel->setText(QString::fromStdString(std::format("Login: {}\nPassword: {}", entry.mLogin, entry.mPassword)));
