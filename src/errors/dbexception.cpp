@@ -1,10 +1,5 @@
 #include "errors/dbexception.hpp"
 
-DBException::DBException(const char *msg) : message(msg)
+DBException::DBException(const std::string msg) : std::runtime_error(msg)  
 {
 }
-
-const char* DBException::what() const throw() { return message.c_str(); }
-
-
-DBException::~DBException() {};

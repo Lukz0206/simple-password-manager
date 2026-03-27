@@ -35,6 +35,7 @@ void AppManager::AuthenticateUser(QString login, QString password)
     catch (const DBException &e)
     {
         ShowErrorbox("Error while accessing database! Please restart app");
+        std::cerr << e.what() << std::endl;
         return;
     }
 
@@ -58,9 +59,8 @@ void AppManager::AuthenticateUser(QString login, QString password)
 
 void AppManager::RegisterUser(QString login, QString password)
 {
-    std::cout << "Registering User" << std::endl;
-    Loginhandler loginhandler;
 
+    Loginhandler loginhandler;
     std::string loginStr = login.toStdString();
     std::string passwordStr = password.toStdString();
 
@@ -112,7 +112,6 @@ void AppManager::InitializeUserMenu()
 
 void AppManager::InsertNewEntry(std::string &login, std::string &password, std::string &source)
 {
-    std::cout << std::format("{},{},{}", login, password, source) << std::endl;
     try
     {
         mAppmodel.InsertNewEntry(login, password, source);        
@@ -136,17 +135,16 @@ void AppManager::ShowErrorbox(std::string message)
 
 void AppManager::DeleteSelectedEntry(int entryID)
 {
-    std::cout << "Delete requested: " << entryID << std::endl;
     try
     {
         mAppmodel.DeleteEntry(entryID);
+        std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
+        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
+        pUserMenu->RefreshEntries(entries);
     }
-    catch (DBException& e)
+    catch (std::exception& e)
     {
         ShowErrorbox("Couldn't delete entry");
     }
     
-    std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
-    std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
-    pUserMenu->RefreshEntries(entries);
 }

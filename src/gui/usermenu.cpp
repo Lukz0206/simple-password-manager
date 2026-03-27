@@ -68,6 +68,8 @@ void UserMenu::OnDeleteButtonPressed()
         int entryID = mPasswordEntries.at(mSelectedIndex).mID;
         emit(DeleteEntryRequest(entryID));
     }
+    //Turn off delete button after pressing once -> user needs to explicitly select another entry
+    pDeleteBtn->setEnabled(false);
 }
 
 UserMenu::~UserMenu()
@@ -92,6 +94,7 @@ void UserMenu::RefreshEntries(std::vector<PasswordEntry> &entries)
         pDetailLabel->setText("Select an entry");
         pDeleteBtn->setEnabled(false);
     }
+    pDetailLabel->setText("Select an entry");
 }
 
 void UserMenu::HandleListClick(const QModelIndex &index)

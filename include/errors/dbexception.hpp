@@ -2,17 +2,13 @@
 #define DBEXCEPTION_HPP
 #include <exception>
 #include <string>
+#include <stdexcept>
 
-class DBException : public std::exception
+class DBException : public std::runtime_error
 {
 
 public:
-    DBException(const char *msg);
-    ~DBException();
-
-    const char* what() const throw();
-private:
-    std::string message;
+    explicit DBException(const std::string msg);
 };
 
 #endif

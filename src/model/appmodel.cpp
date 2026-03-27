@@ -45,19 +45,19 @@ int Appmodel::AuthenticateUser(std::string &login, std::string &password)
 // Reads all Passwordenntries for a user and encrypts them. Can throw an error
 std::vector<PasswordEntry> Appmodel::ReadAllPasswordEntriesFromUser(std::string &login)
 {
-    std::vector<PasswordEntry> entries = pDBHandler->ReadAllPasswordEntriesFromUser(login);
-    Loginhandler loginhandler;
     try
     {
+        Loginhandler loginhandler;
+        std::vector<PasswordEntry> entries = pDBHandler->ReadAllPasswordEntriesFromUser(login);
         loginhandler.DecryptAllPasswords(
             entries, mCurrentUser.mLogin, mCurrentUser.mPassword, mCurrentUser.mSalt);
+        return entries;
     }
     catch (const std::exception &e)
     {
         throw e;
     }
 
-    return entries;
 }
 
 
