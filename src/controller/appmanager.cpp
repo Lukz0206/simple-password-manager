@@ -106,6 +106,7 @@ void AppManager::InitializeUserMenu()
     // Connect button actions
     connect(pUserMenu, &UserMenu::AddEntryButtonRequest, this, &AppManager::InsertNewEntry);
     connect(pUserMenu, &UserMenu::DeleteEntryRequest, this, &AppManager::DeleteSelectedEntry);
+    connect(pUserMenu, &UserMenu::EditEntryRequest, this, &AppManager::EditSelectedEntry);
     pMenuStack->addWidget(pUserMenu);
     pUserMenu->RefreshEntries(userEntries);
 }
@@ -147,4 +148,21 @@ void AppManager::DeleteSelectedEntry(int entryID)
         ShowErrorbox("Couldn't delete entry");
     }
     
+}
+
+void AppManager::EditSelectedEntry(int id, std::string &newLogin, std::string &newPassword, std::string &newSource)
+{
+    try
+    {
+        mAppmodel.EditEntry(id, newLogin, newPassword, newSource);
+        std::cout << "Editentry fertig" << std::endl;
+        std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
+        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
+        std::cout << "Lesen fertig" << std::endl;   
+        pUserMenu->RefreshEntries(entries);
+    }
+    catch (const std::exception &e)
+    {
+        ShowErrorbox("Error while editing entry");
+    }
 }

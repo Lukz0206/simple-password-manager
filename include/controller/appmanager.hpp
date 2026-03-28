@@ -39,6 +39,7 @@ public slots:
     void InitializeUserMenu();
     void InsertNewEntry(std::string &login, std::string &password, std::string &source);
     void DeleteSelectedEntry(int entryID);
+    void EditSelectedEntry(int, std::string&, std::string&, std::string&);
 
 private:
     Appmodel&                       mAppmodel;

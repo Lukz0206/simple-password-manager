@@ -19,6 +19,9 @@ public:
     QString GetPassword() const;
     QString GetSource() const;
     void CheckInput();
+    void SetUsernameText(std::string);
+    void SetPasswordText(std::string);
+    void SetSourceText(std::string);
 
 private:
     QLineEdit *pUsernameEdit;

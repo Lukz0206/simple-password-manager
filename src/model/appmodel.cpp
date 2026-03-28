@@ -103,7 +103,8 @@ void Appmodel::AddNewMasterLogin(User &user)
     }
 }
 
-User Appmodel::GetCurrentUser(){
+User Appmodel::GetCurrentUser()
+{
     return mCurrentUser;
 }
 
@@ -113,8 +114,24 @@ void Appmodel::DeleteEntry(int entryID)
     {
         pDBHandler->DeletePasswordEntry(entryID);
     }
-    catch(const DBException& e)
+    catch (const DBException &e)
     {
         throw e;
     }
+}
+
+void Appmodel::EditEntry(int id, std::string& login, std::string& password, std::string& source)
+{
+    Loginhandler loginhandler;
+    PasswordEntry entryToEdit = loginhandler.GenerateLoginEntry(mCurrentUser.mLogin, mCurrentUser.mPassword, mCurrentUser.mSalt, login, password, source);
+    entryToEdit.mID = id;
+    try
+    {
+        pDBHandler->EditEntry(entryToEdit);
+    }
+    catch (const DBException &e)
+    {
+        throw;
+    }
+    
 }

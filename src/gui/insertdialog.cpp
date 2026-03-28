@@ -61,4 +61,23 @@ void InsertDialog::CheckInput()
     {
         pOKButton->setEnabled(true);
     }
+    else
+    {
+        pOKButton->setEnabled(false);
+    }
+}
+
+void InsertDialog::SetUsernameText(std::string uName)
+{
+    pUsernameEdit->setText(uName.c_str());
+}
+
+void InsertDialog::SetPasswordText(std::string password)
+{
+    pPasswordEdit->setText(password.c_str());
+}
+
+void InsertDialog::SetSourceText(std::string source)
+{
+    pSourceEdit->setText(source.c_str());
 }

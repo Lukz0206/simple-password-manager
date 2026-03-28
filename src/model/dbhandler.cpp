@@ -4,10 +4,13 @@
 #include "errors/dbexception.hpp"
 #include "model/loginhandler.hpp"
 
-const char* CloseAndFinalizeDB(sqlite3 *db, sqlite3_stmt *stmt)
+const char* DBHandler::CloseAndFinalizeDB(sqlite3 *db, sqlite3_stmt *stmt)
 {
     std::string error = sqlite3_errmsg(db);
-    sqlite3_finalize(stmt);
+    if(stmt == nullptr)
+    {
+        sqlite3_finalize(stmt);
+    }
     sqlite3_close(db);
     return error.c_str();
 }
@@ -156,7 +159,6 @@ void DBHandler::InsertNewEntry(const std::string &user, const std::string &login
 {
     std::vector<std::string> entryData = {user, login, password, source, iv_base64};
     std::string sql = std::format("INSERT INTO USERPASSWORD VALUES(NULL, ?1, ?2, ?3, ?4, ?5);");
-    std::cout << sql << std::endl;
     try
     {
         OpenDatabase();
@@ -183,7 +185,6 @@ void DBHandler::InsertNewEntry(const std::string &user, const std::string &login
             std::string err = CloseAndFinalizeDB(pLoginDB, stmt);
             throw DBException(err);
         }
-        std::cout << "Data inserted successfully \n";
         CloseAndFinalizeDB(pLoginDB, stmt);
     }
     catch (const DBException &e)
@@ -199,7 +200,6 @@ std::vector<PasswordEntry> DBHandler::ReadAllPasswordEntriesFromUser(std::string
 {
     const std::string sql = "SELECT PASSID, USER, LOGINNAME, PASSWORD, SOURCE, IV from Userpassword where USER = ?1;";
     std::vector<PasswordEntry> userEntries;
-
     OpenDatabase();
     sqlite3_stmt *stmt = nullptr;
 
@@ -258,4 +258,31 @@ void DBHandler::DeletePasswordEntry(int entryID)
     {
         throw e;
     }
+}
+
+void DBHandler::EditEntry(PasswordEntry &entry)
+{
+    OpenDatabase();
+    std::string sql = "UPDATE USERPASSWORD SET LOGINNAME = ?1, PASSWORD = ?2, SOURCE = ?3, IV = ?4 WHERE PASSID = ?5;";
+
+    sqlite3_stmt* stmt = nullptr;
+    if(sqlite3_prepare_v2(pLoginDB, sql.c_str(), -1, &stmt, NULL) != SQLITE_OK)
+    {
+        std::string error = CloseAndFinalizeDB(pLoginDB, stmt);
+        std::cout << error << std::endl;
+        throw DBException(error);
+    }
+
+    sqlite3_bind_text(stmt, 1, entry.mLogin.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 2, entry.mPassword.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 3, entry.mSource.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 4, entry.mIV.c_str(), -1, SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt, 5, entry.mID);
+
+    if(sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        std::string error = CloseAndFinalizeDB(pLoginDB, stmt);
+        throw DBException(error);
+    }
+    CloseAndFinalizeDB(pLoginDB, stmt);
 }

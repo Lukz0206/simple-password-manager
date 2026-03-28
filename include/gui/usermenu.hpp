@@ -23,6 +23,7 @@ public:
 signals:
     void AddEntryButtonRequest(std::string &login, std::string &password, std::string &source);
     void DeleteEntryRequest(int entryID);
+    void EditEntryRequest(int, std::string&, std::string&, std::string&);
 private:
     QLabel *pDetailLabel;
     QStandardItemModel *pEntryModel;
@@ -36,6 +37,7 @@ private:
     void OnAddEntryButtonPressed();
     void HandleListClick(const QModelIndex &index);
     void OnDeleteButtonPressed();
+    void OnEditButtonPressed();
     int mSelectedIndex;
 };
 

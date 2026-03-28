@@ -26,6 +26,8 @@ public:
     void InsertNewEntry(const std::string &user, const std::string &login, const std::string &password, const std::string &source, const std::string &iv_base64);
     std::vector<PasswordEntry> ReadAllPasswordEntriesFromUser(std::string &user);
     void DeletePasswordEntry(int entryID);
+    void EditEntry(PasswordEntry &entry);
+
 
 private:
     std::string mUserDBPath;
@@ -38,6 +40,8 @@ private:
      */
     static int ReadCountFunc(void *data, int numCols, char **colVals, char **colNames);
     static int ReadUserLoginEntry(void *data, int numCols, char **colVals, char **colNames);
+    const char* CloseAndFinalizeDB(sqlite3 *db, sqlite3_stmt *stmt);
+
 };
 
 #endif

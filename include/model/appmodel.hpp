@@ -29,6 +29,7 @@ public:
     bool IsMasterLoginInDB(std::string login);
     void AddNewMasterLogin(User &user);
     void DeleteEntry(int entryID);
+    void EditEntry(int id, std::string& login, std::string& password, std::string& source);
     User GetCurrentUser();
 
 private:

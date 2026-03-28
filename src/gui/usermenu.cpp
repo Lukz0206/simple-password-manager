@@ -45,6 +45,8 @@ UserMenu::UserMenu(QWidget *parent) : QWidget(parent)
     connect(pAddBtn, &QPushButton::pressed, this, &UserMenu::OnAddEntryButtonPressed);
     //Connect deleteButton action
     connect(pDeleteBtn, &QPushButton::pressed, this, &UserMenu::OnDeleteButtonPressed);
+    //Connect editButton action
+    connect(pEditBtn, &QPushButton::pressed, this, &UserMenu::OnEditButtonPressed);
 }
 
 // Show a AddEntryDialog on Buttonpress
@@ -103,4 +105,21 @@ void UserMenu::HandleListClick(const QModelIndex &index)
     mSelectedIndex = index.data(Qt::UserRole).toInt();
     const PasswordEntry &entry = mPasswordEntries.at(mSelectedIndex);
     pDetailLabel->setText(QString::fromStdString(std::format("Login: {}\nPassword: {}", entry.mLogin, entry.mPassword)));
+}
+
+void UserMenu::OnEditButtonPressed()
+{
+    InsertDialog dialog(this);
+    PasswordEntry currentEntry = mPasswordEntries.at(mSelectedIndex);
+    dialog.SetUsernameText(currentEntry.mLogin);
+    dialog.SetPasswordText(currentEntry.mPassword);
+    dialog.SetSourceText(currentEntry.mSource);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        int entryID = currentEntry.mID;
+        std::string newUsername = dialog.GetUsername().toStdString();
+        std::string newPassword = dialog.GetPassword().toStdString();
+        std::string newSource = dialog.GetSource().toStdString();
+        emit EditEntryRequest(entryID, newUsername, newPassword, newSource);
+    };
 }
