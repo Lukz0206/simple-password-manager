@@ -1,8 +1,7 @@
 #include "controller/appmanager.hpp"
 #include <QMessageBox>
 
-
-AppManager::AppManager( Appmodel &model) : mAppmodel(model)
+AppManager::AppManager(Appmodel &model) : mAppmodel(model)
 {
     mAppmodel = model;
     pMainWindow = std::make_unique<QMainWindow>();
@@ -90,35 +89,20 @@ void AppManager::ShowUserMenu()
 void AppManager::InitializeUserMenu()
 {
     pUserMenu = new UserMenu();
-    User currentUser = mAppmodel.GetCurrentUser();
-    std::vector<PasswordEntry> userEntries;
-
-    try
-    {
-        userEntries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUser.mLogin);
-    }
-    catch (const std::exception &e)
-    {
-        ShowErrorbox("Couldn't decrypt your passwords!");
-        return;
-    }
-
+    FetchUserEntriesAndRefresh();
     // Connect button actions
     connect(pUserMenu, &UserMenu::AddEntryButtonRequest, this, &AppManager::InsertNewEntry);
     connect(pUserMenu, &UserMenu::DeleteEntryRequest, this, &AppManager::DeleteSelectedEntry);
     connect(pUserMenu, &UserMenu::EditEntryRequest, this, &AppManager::EditSelectedEntry);
     pMenuStack->addWidget(pUserMenu);
-    pUserMenu->RefreshEntries(userEntries);
 }
 
 void AppManager::InsertNewEntry(std::string &login, std::string &password, std::string &source)
 {
     try
     {
-        mAppmodel.InsertNewEntry(login, password, source);        
-        User currentUser = mAppmodel.GetCurrentUser();
-        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUser.mLogin);
-        pUserMenu->RefreshEntries(entries);
+        mAppmodel.InsertNewEntry(login, password, source);
+        FetchUserEntriesAndRefresh();
     }
     catch (const DBException &e)
     {
@@ -139,15 +123,12 @@ void AppManager::DeleteSelectedEntry(int entryID)
     try
     {
         mAppmodel.DeleteEntry(entryID);
-        std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
-        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
-        pUserMenu->RefreshEntries(entries);
+        FetchUserEntriesAndRefresh();
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
         ShowErrorbox("Couldn't delete entry");
     }
-    
 }
 
 void AppManager::EditSelectedEntry(int id, std::string &newLogin, std::string &newPassword, std::string &newSource)
@@ -155,14 +136,24 @@ void AppManager::EditSelectedEntry(int id, std::string &newLogin, std::string &n
     try
     {
         mAppmodel.EditEntry(id, newLogin, newPassword, newSource);
-        std::cout << "Editentry fertig" << std::endl;
-        std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
-        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
-        std::cout << "Lesen fertig" << std::endl;   
-        pUserMenu->RefreshEntries(entries);
+        FetchUserEntriesAndRefresh();
     }
     catch (const std::exception &e)
     {
         ShowErrorbox("Error while editing entry");
+    }
+}
+
+void AppManager::FetchUserEntriesAndRefresh()
+{
+    try
+    {
+        std::string currentUserLogin = mAppmodel.GetCurrentUser().mLogin;
+        std::vector<PasswordEntry> entries = mAppmodel.ReadAllPasswordEntriesFromUser(currentUserLogin);
+        pUserMenu->RefreshEntries(entries);
+    }
+    catch (const std::exception &e)
+    {
+        ShowErrorbox("Error while fetching and decrypting data");
     }
 }

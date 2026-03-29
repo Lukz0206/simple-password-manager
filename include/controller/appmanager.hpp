@@ -40,6 +40,7 @@ public slots:
     void InsertNewEntry(std::string &login, std::string &password, std::string &source);
     void DeleteSelectedEntry(int entryID);
     void EditSelectedEntry(int, std::string&, std::string&, std::string&);
+    void FetchUserEntriesAndRefresh();
 
 private:
     Appmodel&                       mAppmodel;
