@@ -16,6 +16,7 @@ AppManager::AppManager(Appmodel &model) : mAppmodel(model)
     // LoginButton in main menu with Loginhandler
     connect(pLoginMenu, &LoginMenu::LoginRequested, this, &AppManager::AuthenticateUser);
     connect(pLoginMenu, &LoginMenu::RegisterRequested, this, &AppManager::RegisterUser);
+    connect(pLoginMenu, &LoginMenu::ResetRequested, this, &AppManager::DeleteDB);
 }
 void AppManager::ShowWindow()
 {
@@ -33,8 +34,7 @@ void AppManager::AuthenticateUser(QString login, QString password)
     }
     catch (const DBException &e)
     {
-        ShowErrorbox("Error while accessing database! Please restart app");
-        std::cerr << e.what() << std::endl;
+        ShowMessageBox("Error while accessing database! Please restart app");
         return;
     }
 
@@ -72,7 +72,7 @@ void AppManager::RegisterUser(QString login, QString password)
         }
         catch (const DBException &e)
         {
-            ShowErrorbox("Error while creating new user! Please try again!");
+            ShowMessageBox("Error while creating new user! Please try again!");
         }
     }
     else
@@ -94,6 +94,7 @@ void AppManager::InitializeUserMenu()
     connect(pUserMenu, &UserMenu::AddEntryButtonRequest, this, &AppManager::InsertNewEntry);
     connect(pUserMenu, &UserMenu::DeleteEntryRequest, this, &AppManager::DeleteSelectedEntry);
     connect(pUserMenu, &UserMenu::EditEntryRequest, this, &AppManager::EditSelectedEntry);
+    connect(pUserMenu, &UserMenu::BackToMenuRequest, this, &AppManager::LogoutUser);
     pMenuStack->addWidget(pUserMenu);
 }
 
@@ -106,15 +107,15 @@ void AppManager::InsertNewEntry(std::string &login, std::string &password, std::
     }
     catch (const DBException &e)
     {
-        ShowErrorbox("Couldn't add entry to database!");
+        ShowMessageBox("Couldn't add entry to database!");
     }
 }
 
-void AppManager::ShowErrorbox(std::string message)
+void AppManager::ShowMessageBox(std::string message)
 {
-    QMessageBox errorBox;
-    errorBox.setText(message.c_str());
-    errorBox.exec();
+    QMessageBox messageBox;
+    messageBox.setText(message.c_str());
+    messageBox.exec();
     return;
 }
 
@@ -127,7 +128,7 @@ void AppManager::DeleteSelectedEntry(int entryID)
     }
     catch (std::exception &e)
     {
-        ShowErrorbox("Couldn't delete entry");
+        ShowMessageBox("Couldn't delete entry");
     }
 }
 
@@ -140,7 +141,7 @@ void AppManager::EditSelectedEntry(int id, std::string &newLogin, std::string &n
     }
     catch (const std::exception &e)
     {
-        ShowErrorbox("Error while editing entry");
+        ShowMessageBox("Error while editing entry");
     }
 }
 
@@ -154,6 +155,28 @@ void AppManager::FetchUserEntriesAndRefresh()
     }
     catch (const std::exception &e)
     {
-        ShowErrorbox("Error while fetching and decrypting data");
+        ShowMessageBox("Error while fetching and decrypting data");
+    }
+}
+
+void AppManager::LogoutUser()
+{
+    mAppmodel.Reset();
+    pLoginMenu->Reset();
+    pMenuStack->setCurrentIndex(LOGINMENU_INDEX);
+    // Makes the old usermenu unusable
+    pUserMenu->deleteLater();
+}
+
+void AppManager::DeleteDB()
+{
+    try
+    {
+        mAppmodel.DeleteAllData();
+        ShowMessageBox("Data successfully deleted!");
+    }
+    catch(const std::exception& e)
+    {
+        ShowMessageBox("An error occured. Could not delete data");
     }
 }

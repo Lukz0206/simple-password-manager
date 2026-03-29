@@ -24,6 +24,7 @@ signals:
     void AddEntryButtonRequest(std::string &login, std::string &password, std::string &source);
     void DeleteEntryRequest(int entryID);
     void EditEntryRequest(int, std::string&, std::string&, std::string&);
+    void BackToMenuRequest();
 private:
     QLabel *pDetailLabel;
     QStandardItemModel *pEntryModel;
@@ -31,6 +32,7 @@ private:
     QVBoxLayout *pMainLayout;  
     QSplitter *pSplitter;
     QListView *pListView;
+    QPushButton *pBackToMenuBtn;
     QPushButton *pAddBtn;
     QPushButton *pEditBtn;
     QPushButton *pDeleteBtn;
@@ -38,6 +40,7 @@ private:
     void HandleListClick(const QModelIndex &index);
     void OnDeleteButtonPressed();
     void OnEditButtonPressed();
+    void OnBackToMenuPressed();
     int mSelectedIndex;
 };
 

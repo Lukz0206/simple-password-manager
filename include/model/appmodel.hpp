@@ -31,6 +31,12 @@ public:
     void DeleteEntry(int entryID);
     void EditEntry(int id, std::string& login, std::string& password, std::string& source);
     User GetCurrentUser();
+    /**
+     * Resets internal variables of the class
+     */
+    void Reset();
+
+    void DeleteAllData();
 
 private:
     AppManager                  *pManager;

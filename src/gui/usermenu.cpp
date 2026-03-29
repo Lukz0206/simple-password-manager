@@ -27,12 +27,15 @@ UserMenu::UserMenu(QWidget *parent) : QWidget(parent)
     pAddBtn = new QPushButton("Add Entry");
     pEditBtn = new QPushButton("Edit Entry");
     pDeleteBtn = new QPushButton("Delete Entry");
+    pBackToMenuBtn = new QPushButton("Back to Login");
+    pEditBtn->setEnabled(false);
     pDeleteBtn->setEnabled(false);
     
     bottomBar->addWidget(pAddBtn);
     bottomBar->addWidget(pEditBtn);
     bottomBar->addWidget(pDeleteBtn);
-    
+    bottomBar->addWidget(pBackToMenuBtn);
+
     pMainLayout->addLayout(bottomBar);
     
     pEntryModel = new QStandardItemModel(this);
@@ -47,6 +50,8 @@ UserMenu::UserMenu(QWidget *parent) : QWidget(parent)
     connect(pDeleteBtn, &QPushButton::pressed, this, &UserMenu::OnDeleteButtonPressed);
     //Connect editButton action
     connect(pEditBtn, &QPushButton::pressed, this, &UserMenu::OnEditButtonPressed);
+
+    connect(pBackToMenuBtn, &QPushButton::pressed, this, &UserMenu::OnBackToMenuPressed);
 }
 
 // Show a AddEntryDialog on Buttonpress
@@ -72,6 +77,7 @@ void UserMenu::OnDeleteButtonPressed()
     }
     //Turn off delete button after pressing once -> user needs to explicitly select another entry
     pDeleteBtn->setEnabled(false);
+    pEditBtn->setEnabled(false);
 }
 
 UserMenu::~UserMenu()
@@ -122,4 +128,9 @@ void UserMenu::OnEditButtonPressed()
         std::string newSource = dialog.GetSource().toStdString();
         emit EditEntryRequest(entryID, newUsername, newPassword, newSource);
     };
+}
+
+void UserMenu::OnBackToMenuPressed()
+{
+    emit BackToMenuRequest();
 }

@@ -285,3 +285,24 @@ void DBHandler::EditEntry(PasswordEntry &entry)
     }
     CloseAndFinalizeDB(pLoginDB, stmt);
 }
+
+void DBHandler::DeleteAllData()
+{
+    try
+    {
+        OpenDatabase();
+        std::string sql = "Delete from Logindata; Delete from Userpassword;";
+        char* error;
+        if(sqlite3_exec(pLoginDB, sql.c_str(), NULL, NULL, &error) != SQLITE_OK)
+        {
+            std::string errorStr = error;
+            sqlite3_free(error);
+            throw DBException(errorStr);
+        }
+        CloseAndFinalizeDB(pLoginDB, nullptr);
+    }
+    catch(const DBException& e)
+    {
+        throw;
+    }
+}

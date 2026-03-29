@@ -20,13 +20,11 @@ int Appmodel::AuthenticateUser(std::string &login, std::string &password)
         {
             return NOLOGINFOUND;
         }
-        std::cout << "Login found" << std::endl;
         Loginhandler loginhandler;
         if (!loginhandler.CheckLoginCredentials(pDBHandler, login, password))
         {
             return INCORRECTLOGIN;
         }
-        std::cout << "Login correct. Show next Page" << std::endl;
         // Get Data from User and change password to normal representation
         User currentUser = pDBHandler->GetMasterLoginData(login);
         currentUser.mPassword = password;
@@ -134,4 +132,24 @@ void Appmodel::EditEntry(int id, std::string& login, std::string& password, std:
         throw;
     }
     
+}
+/**
+ * Replaces the mCurrentUser attribute with an empty user.
+ */
+void Appmodel::Reset()
+{
+    mCurrentUser = User();
+}
+
+void Appmodel::DeleteAllData()
+{
+    try
+    {
+        pDBHandler->DeleteAllData();
+        Reset();
+    }
+    catch(const DBException& e)
+    {
+        throw;
+    }
 }

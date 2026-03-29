@@ -30,7 +30,7 @@ public:
     AppManager(Appmodel &model);
     void ShowWindow();
     void ShowUserMenu();
-    void ShowErrorbox(std::string message);
+    void ShowMessageBox(std::string message);
     
 public slots:
     void AuthenticateUser(QString login, QString password);
@@ -41,14 +41,15 @@ public slots:
     void DeleteSelectedEntry(int entryID);
     void EditSelectedEntry(int, std::string&, std::string&, std::string&);
     void FetchUserEntriesAndRefresh();
+    void LogoutUser();
+    void DeleteDB();
 
-private:
+    private:
     Appmodel&                       mAppmodel;
     std::unique_ptr<QMainWindow>    pMainWindow;
     LoginMenu                       *pLoginMenu;
     UserMenu                        *pUserMenu;
     QStackedWidget                  *pMenuStack;
-    
 };
 
 #endif

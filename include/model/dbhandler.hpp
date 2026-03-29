@@ -27,6 +27,7 @@ public:
     std::vector<PasswordEntry> ReadAllPasswordEntriesFromUser(std::string &user);
     void DeletePasswordEntry(int entryID);
     void EditEntry(PasswordEntry &entry);
+    void DeleteAllData();
 
 
 private:
