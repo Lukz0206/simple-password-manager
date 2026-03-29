@@ -123,10 +123,8 @@ static CryptoPP::SecByteBlock DeriveMasterKey(std::string &inputdata, std::strin
 PasswordEntry Loginhandler::GenerateLoginEntry(std::string &userLogin, std::string &userPassword, std::string &userSalt, std::string &sourceLogin, std::string &sourcePassword, std::string &source)
 {
     PasswordEntry entry;
-    // std::cout << std::format("DEBUG Login: {}, Password: {}, Salt: {}\n", userLogin, userPassword, userSalt);
     std::string userAndPassword = userLogin + userPassword;
     CryptoPP::SecByteBlock masterKey = DeriveMasterKey(userAndPassword, userSalt);
-    // std::cout << "MasterKey: " << EncodeToBase64(masterKey) << std::endl;
 
     CryptoPP::AutoSeededRandomPool prng;
     CryptoPP::SecByteBlock iv(IV_LENGTH);
@@ -171,7 +169,6 @@ void Loginhandler::DecryptAllPasswords(std::vector<PasswordEntry> &passwordEntri
     std::string userAndPassword = masterLogin + masterPassword;
     CryptoPP::SecByteBlock masterKey = DeriveMasterKey(userAndPassword, salt_base64);
     
-    std::cout << "MasterKey: " << EncodeToBase64(masterKey) << std::endl;
     try
     {
         for(PasswordEntry &entry : passwordEntries)

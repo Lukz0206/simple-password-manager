@@ -269,7 +269,6 @@ void DBHandler::EditEntry(PasswordEntry &entry)
     if(sqlite3_prepare_v2(pLoginDB, sql.c_str(), -1, &stmt, NULL) != SQLITE_OK)
     {
         std::string error = CloseAndFinalizeDB(pLoginDB, stmt);
-        std::cout << error << std::endl;
         throw DBException(error);
     }
 
