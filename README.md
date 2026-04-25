@@ -11,8 +11,3 @@ Dependencies for Debian/Ubuntu:
 sudo apt install qt6-base-dev
 sudo apt install libcrypto++-dev
 sudo apt install sqlite3
-
-
-Important:
-Not every feature is implemented yet.
-
